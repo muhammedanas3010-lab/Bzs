@@ -837,6 +837,9 @@
             const countryVal = (c.country || '').trim();
             const isKerala = stateVal.toLowerCase() === 'kerala';
             const isIndia = !countryVal || countryVal.toLowerCase() === 'india' || countryVal.toLowerCase() === 'bharat';
+            const totalPrice = parseFloat(c.price) || 0;
+            const advancePaid = parseFloat(c.advance) || 0;
+            const balanceAmount = Math.max(0, totalPrice - advancePaid);
 
             const lines = [
                 `KAIZ SOOQ (${c.platform}) - Order Details`,
@@ -861,8 +864,9 @@
                 lines.push(`Measurements: ${c.measurements}`);
             }
 
-            lines.push(`Total Price: Rs. ${c.price}`);
-            lines.push(`Advance Paid: Rs. ${c.advance}`);
+            lines.push(`Total Price: Rs. ${totalPrice}`);
+            lines.push(`Advance Paid: Rs. ${advancePaid}`);
+            lines.push(`Balance Amount: Rs. ${balanceAmount}`);
             lines.push(`Delivery Date: ${c.deliveryDate}`);
 
             if (c.location) {
@@ -1519,6 +1523,7 @@
             const totalCompProf = custHistory.filter(x => x.status === 'Completed').reduce((sum, x) => sum + (x.bizProfit || 0), 0);
             const extrasDisplay = (c.extraItems && c.extraItems.length) ? c.extraItems.join(', ') : 'None';
             const ageDisplay = (c.age !== undefined && c.age !== null && String(c.age).trim() !== '') ? c.age : 'Not specified';
+            const balanceAmt = Math.max(0, (parseFloat(c.price) || 0) - (parseFloat(c.advance) || 0));
 
             let html = `
                 <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 space-y-1">
@@ -1554,7 +1559,7 @@
                     <p><b>Dress Colour:</b> ${c.dressColour || 'Not specified'}</p>
                     <p><b>Extra Items:</b> ${extrasDisplay}</p>
                     <p><b>Measurements:</b> ${c.measurements || 'Not specified'}</p>
-                    <p class="text-emerald-700 font-semibold"><b>Total Price / Advance:</b> ₹${c.price} / ₹${c.advance}</p>
+                    <p class="text-emerald-700 font-semibold"><b>Total Price / Advance / Balance:</b> ₹${c.price} / ₹${c.advance} / ₹${balanceAmt}</p>
                     <p><b>Platform:</b> ${c.platform}</p>
                     <p class="text-red-700 font-semibold"><b>Delivery Date:</b> ${c.deliveryDate} (${getDaysRemainingText(c.deliveryDate)})</p>
                     <p class="text-blue-700 font-semibold"><b>Address:</b> ${c.address || 'N/A'}</p>
@@ -1835,6 +1840,7 @@
                 const extrasBadge = (c.extraItems && c.extraItems.length) ? `<span class="text-[10px] bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200">+ ${c.extraItems.join(', ')}</span>` : '';
                 const measText = c.measurements ? `<p class="text-[11px] text-purple-900 bg-purple-50/70 px-2 py-1 rounded mt-1"><b>Meas:</b> ${c.measurements}</p>` : '';
                 const addrText = c.address ? `<p class="text-[11px] text-blue-700 font-medium mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>Address: ${c.address}</p>` : '';
+                const balanceAmt = Math.max(0, (parseFloat(c.price) || 0) - (parseFloat(c.advance) || 0));
                 pendingCustHtml += `
                     <div class="bg-white p-3 rounded-xl shadow-sm border space-y-2">
                         <div class="flex justify-between items-start gap-2">
@@ -1849,7 +1855,7 @@
                             <button onclick="toggleOrderStatus('${c.id}')" class="bg-emerald-100 text-emerald-800 text-[11px] px-2.5 py-1 rounded-lg font-semibold hover:bg-emerald-200 shrink-0">Mark Completed</button>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t text-[11px] text-gray-600">
-                            <span class="text-emerald-700 font-semibold">Price: <b>₹${c.price}</b> | Adv: <b>₹${c.advance}</b></span>
+                            <span class="text-emerald-700 font-semibold">Price: <b>₹${c.price}</b> | Adv: <b>₹${c.advance}</b> | Bal: <b>₹${balanceAmt}</b></span>
                             <div class="flex items-center space-x-2.5">
                                 <button onclick="sendOrderWhatsAppConfirmation('${c.id}')" title="Send Order Summary on WhatsApp" class="text-emerald-600 font-semibold flex items-center space-x-1">
                                     <i class="fa-brands fa-whatsapp text-sm"></i><span>Send</span>
@@ -1880,6 +1886,7 @@
                 const extrasBadge = (c.extraItems && c.extraItems.length) ? `<span class="text-[10px] bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200">+ ${c.extraItems.join(', ')}</span>` : '';
                 const measText = c.measurements ? `<p class="text-[11px] text-purple-900 bg-purple-50/70 px-2 py-1 rounded mt-1"><b>Meas:</b> ${c.measurements}</p>` : '';
                 const addrText = c.address ? `<p class="text-[11px] text-blue-700 font-medium mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>Address: ${c.address}</p>` : '';
+                const balanceAmt = Math.max(0, (parseFloat(c.price) || 0) - (parseFloat(c.advance) || 0));
                 completedCustHtml += `
                     <div class="bg-white p-3 rounded-xl shadow-sm border space-y-2">
                         <div class="flex justify-between items-start gap-2">
@@ -1895,7 +1902,7 @@
                             <button onclick="toggleOrderStatus('${c.id}')" class="bg-amber-100 text-amber-800 text-[11px] px-2.5 py-1 rounded-lg font-semibold hover:bg-amber-200 shrink-0">Mark Pending</button>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t text-[11px] text-gray-600">
-                            <span class="text-emerald-700 font-semibold">Price: <b>₹${c.price}</b> | Adv: <b>₹${c.advance}</b> <span class="text-gray-600 font-normal">| Profit: <b class="text-emerald-700">₹${c.bizProfit}</b></span></span>
+                            <span class="text-emerald-700 font-semibold">Price: <b>₹${c.price}</b> | Adv: <b>₹${c.advance}</b> | Bal: <b>₹${balanceAmt}</b> <span class="text-gray-600 font-normal">| Profit: <b class="text-emerald-700">₹${c.bizProfit}</b></span></span>
                             <div class="flex items-center space-x-2.5">
                                 <button onclick="sendOrderWhatsAppConfirmation('${c.id}')" title="Send Order Summary on WhatsApp" class="text-emerald-600 font-semibold flex items-center space-x-1">
                                     <i class="fa-brands fa-whatsapp text-sm"></i><span>Send</span>
@@ -1917,3 +1924,4 @@
     </script>
 </body>
 </html>
+
