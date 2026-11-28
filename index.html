@@ -840,42 +840,28 @@
             const totalPrice = parseFloat(c.price) || 0;
             const advancePaid = parseFloat(c.advance) || 0;
             const balanceAmount = Math.max(0, totalPrice - advancePaid);
+            const ageText = (c.age !== undefined && c.age !== null && String(c.age).trim() !== '') ? c.age : 'N/A';
 
             const lines = [
-                `KAIZ SOOQ (${c.platform}) - Order Details`,
-                `Hello ${custName}, thank you for shopping with KAIZ SOOQ.`,
-                `Customer Name: ${custName}`
+                `KAIZ SOOQ ${c.platform}- order details`,
+                `*Hello ${custName} thank you for shopping with KAIZ SOOQ*`,
+                ``,
+                `*Delivery date: ${c.deliveryDate || 'N/A'}*`,
+                `Price - Rs. ${totalPrice}`,
+                `Advance paid: Rs. ${advancePaid}`,
+                `*Balance amount: Rs. ${balanceAmount}*`,
+                ``,
+                `Age: ${ageText}`,
+                `Colour: ${c.dressColour || 'N/A'}`,
+                `*Measurements: ${c.measurements || 'N/A'}*`,
+                `Extra item: ${extrasText}`,
+                `*Address:*`,
+                `Name: ${custName}`,
+                `House street address: ${c.address || 'N/A'}`,
+                `Location: ${c.location || 'N/A'}`,
+                `Pincode: ${c.pincode || 'N/A'}`,
+                `District: ${c.district || 'N/A'}`
             ];
-
-            if (c.age !== undefined && c.age !== null && String(c.age).trim() !== '') {
-                lines.push(`Age: ${c.age}`);
-            }
-
-            lines.push(`WhatsApp: ${c.whatsapp}`);
-            lines.push(`Dress Name: ${c.dressName || 'N/A'}`);
-
-            if (c.dressColour) {
-                lines.push(`Dress Colour: ${c.dressColour}`);
-            }
-
-            lines.push(`Extra Items: ${extrasText}`);
-
-            if (c.measurements) {
-                lines.push(`Measurements: ${c.measurements}`);
-            }
-
-            lines.push(`Total Price: Rs. ${totalPrice}`);
-            lines.push(`Advance Paid: Rs. ${advancePaid}`);
-            lines.push(`Balance Amount: Rs. ${balanceAmount}`);
-            lines.push(`Delivery Date: ${c.deliveryDate}`);
-
-            if (c.location) {
-                lines.push(`Location: ${c.location}`);
-            }
-
-            if (c.district) {
-                lines.push(`District: ${c.district}`);
-            }
 
             if (stateVal && !isKerala) {
                 lines.push(`State: ${stateVal}`);
@@ -885,9 +871,7 @@
                 lines.push(`Country: ${countryVal}`);
             }
 
-            if (c.address) {
-                lines.push(`Address: ${c.address}`);
-            }
+            lines.push(`Phone number: ${c.whatsapp || 'N/A'}`);
 
             return lines.join('\n');
         }
@@ -1924,4 +1908,5 @@
     </script>
 </body>
 </html>
+
 
